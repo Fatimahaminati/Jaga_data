@@ -1,0 +1,6 @@
+# Pengaturan pnpm (pnpm >= 11 memindahkan izin build script ke berkas ini)
+allowBuilds:
+  # esbuild perlu skrip instalasi untuk binernya (dipakai Vite)
+  esbuild: true
+  # core-js hanya menjalankan skrip promosi, tidak diperlukan
+  core-js: false

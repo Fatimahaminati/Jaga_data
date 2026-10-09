@@ -1,0 +1,282 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /**
+   * Pusat ukuran font (semua rem; 1rem = 16px — `html` TIDAK pernah diubah).
+   * Semua ukuran teks di komponen harus memakai variabel ini (lewat utility
+   * `.fs-*`), tidak ada ukuran ad hoc.
+   */
+  :root {
+    --fs-factor: 1;
+    --fs-body: calc(0.9375rem * var(--fs-factor)); /* 15px */
+    --fs-editor: calc(1rem * var(--fs-factor)); /* 16px */
+    --fs-button: calc(0.875rem * var(--fs-factor)); /* 14px */
+    --fs-small: calc(0.8125rem * var(--fs-factor)); /* 13px */
+    --fs-h1: calc(1.5rem * var(--fs-factor)); /* 24px */
+    --fs-h2: calc(1.125rem * var(--fs-factor)); /* 18px */
+    --fs-score: calc(2.75rem * var(--fs-factor)); /* 44px */
+    --fs-chart: calc(0.5625rem * var(--fs-factor)); /* 9px — label sumbu grafik SVG */
+  }
+
+  /* Opsi Pengaturan hanya mengalikan variabel — bukan ukuran <html>. */
+  html[data-font-scale='large'] {
+    --fs-factor: 1.1;
+  }
+
+  html[data-font-scale='xlarge'] {
+    --fs-factor: 1.2;
+  }
+
+  @media (max-width: 639px) {
+    :root {
+      --fs-h1: calc(1.375rem * var(--fs-factor)); /* 22px di layar kecil */
+    }
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-ink-50 font-sans leading-relaxed text-ink-900 antialiased;
+    font-size: var(--fs-body);
+  }
+
+  /* Paragraf/tulisan isi: maksimum ~65 karakter agar mudah dibaca. */
+  p,
+  li {
+    @apply max-w-[65ch];
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-600 ring-offset-2 ring-offset-white;
+  }
+
+  ::selection {
+    @apply bg-brand-200 text-ink-950;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-bold leading-tight tracking-tight;
+  }
+
+  h1 {
+    font-size: var(--fs-h1);
+  }
+
+  h2,
+  h3 {
+    font-size: var(--fs-h2);
+  }
+}
+
+@layer utilities {
+  /* Utility turunan dari variabel ukuran font. */
+  .fs-body {
+    font-size: var(--fs-body);
+  }
+
+  .fs-editor {
+    font-size: var(--fs-editor);
+  }
+
+  .fs-button {
+    font-size: var(--fs-button);
+  }
+
+  .fs-small {
+    font-size: var(--fs-small);
+  }
+
+  .fs-h1 {
+    font-size: var(--fs-h1);
+  }
+
+  .fs-h2 {
+    font-size: var(--fs-h2);
+  }
+
+  .fs-score {
+    font-size: var(--fs-score);
+  }
+
+  .fs-chart {
+    font-size: var(--fs-chart);
+  }
+}
+
+@layer components {
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-xl focus:bg-white focus:px-4 focus:py-3 focus:font-semibold focus:text-brand-700 focus:shadow-pop;
+    font-size: var(--fs-button);
+  }
+
+  .surface {
+    @apply rounded-2xl border border-ink-200/70 bg-white shadow-card;
+  }
+
+  .label-caps {
+    @apply font-bold uppercase tracking-wide text-ink-500;
+    font-size: var(--fs-small);
+  }
+
+  .btn {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-5 py-2 font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+    font-size: var(--fs-button);
+  }
+
+  .btn-primary {
+    @apply bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800;
+  }
+
+  .btn-secondary {
+    @apply border border-ink-200 bg-white text-ink-800 hover:bg-ink-100;
+  }
+
+  .btn-ghost {
+    @apply text-ink-700 hover:bg-ink-100;
+  }
+
+  .btn-danger {
+    @apply bg-accent-600 text-white hover:bg-accent-700;
+  }
+
+  .btn-lg {
+    @apply min-h-[52px] px-7;
+  }
+
+  .btn-sm {
+    @apply min-h-[40px] px-3;
+  }
+
+  .pill {
+    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 font-bold;
+    font-size: var(--fs-small);
+  }
+
+  /* ——— Segmen pesan (token editor) ——— */
+  .segment {
+    @apply flex w-full items-start gap-3 rounded-xl border border-ink-200 bg-white px-4 py-3 text-left leading-relaxed text-ink-900 transition-colors;
+    font-size: var(--fs-editor);
+    min-height: 48px;
+  }
+
+  .segment:hover {
+    @apply border-brand-400 bg-brand-50/50;
+  }
+
+  .segment[data-selected='true'] {
+    @apply border-brand-500 ring-2 ring-brand-500/40;
+  }
+
+  .segment[data-decision='keep'] {
+    @apply border-brand-300 bg-brand-50/60;
+  }
+
+  .segment[data-decision='remove'] {
+    @apply border-ink-300 bg-ink-100/70 text-ink-500;
+  }
+
+  .segment[data-decision='remove'] .segment-text {
+    @apply line-through decoration-accent-500;
+  }
+
+  .segment[data-decision='generalize'] {
+    @apply border-accent-300 bg-accent-50;
+  }
+
+  .segment[data-hint='true'] {
+    border-style: dashed;
+    border-color: #f59e0b;
+    background-color: #fffbeb;
+  }
+
+  /* ——— Popover tindakan (termasuk daftar Samarkan) ———
+     Dibatasi ruang yang tersedia di layar lalu digulir sendiri. Tanpa batas ini
+     isi popover (apalagi saat daftar opsi + pratinjau terbuka) meluber keluar
+     viewport; karena posisinya `fixed`, gulir halaman tidak bisa menjangkaunya. */
+  .action-popover {
+    max-height: min(var(--radix-popper-available-height, calc(100vh - 24px)), calc(100vh - 24px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  /* ——— Pratinjau kalimat pada daftar Samarkan ———
+     Tingginya selalu tiga baris: kotak pratinjau tidak boleh mengubah ukuran
+     popover saat opsi disorot/dipilih, sebab perubahan ukuran membuat popover
+     dihitung ulang dan bergeser di bawah kursor (pratinjau kedap-kedip). */
+  .preview-body {
+    @apply leading-relaxed;
+    height: calc(3 * 1.625em);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  /* ——— Pratinjau sebelum/sesudah ——— */
+  .preview-text {
+    @apply leading-relaxed text-ink-800;
+    font-size: var(--fs-editor);
+  }
+
+  .preview-removed {
+    @apply text-ink-500 line-through decoration-accent-500;
+  }
+
+  .preview-generalized {
+    @apply rounded bg-amber-100 px-1 font-medium text-accent-700;
+  }
+
+  .preview-kept {
+    @apply font-medium text-brand-700;
+  }
+
+  .verdict-correct {
+    @apply bg-brand-100 text-brand-800;
+  }
+
+  .verdict-partial {
+    @apply bg-amber-100 text-amber-800;
+  }
+
+  .verdict-wrong {
+    @apply bg-accent-100 text-accent-800;
+  }
+}
+
+/* Mode kontras tinggi — dipilih siswa di Pengaturan. */
+[data-contrast='high'] body {
+  @apply bg-white text-black;
+}
+
+[data-contrast='high'] .surface,
+[data-contrast='high'] .segment {
+  @apply border-2 border-black shadow-none;
+}
+
+[data-contrast='high'] .btn-primary,
+[data-contrast='high'] .btn-danger {
+  @apply bg-black text-white;
+}
+
+[data-contrast='high'] .btn-secondary {
+  @apply border-2 border-black;
+}
+
+[data-contrast='high'] .preview-text {
+  @apply text-black;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
