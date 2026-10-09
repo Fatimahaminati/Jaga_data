@@ -89,4 +89,4 @@ src/
 ## Lisensi
 
 Digunakan untuk keperluan pembelajaran/skripsi.
-"# Jaga_data" 
+"# Jaga_data"
