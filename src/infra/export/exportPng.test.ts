@@ -18,15 +18,14 @@ vi.mock('./download', async (importOriginal) => {
 
 const DATA_URL = 'data:image/png;base64,AAAA'
 
+/** Spy pemantau: ekspor PNG dilarang memakai jaringan (CSP connect-src 'self'). */
+const fetchSpy = vi.fn()
+
 beforeEach(() => {
   vi.mocked(toPng).mockReset().mockResolvedValue(DATA_URL)
   vi.mocked(downloadBlob).mockReset()
-  vi.stubGlobal(
-    'fetch',
-    vi.fn().mockResolvedValue({
-      blob: () => Promise.resolve(new Blob(['png-palsu'], { type: 'image/png' })),
-    }),
-  )
+  fetchSpy.mockReset()
+  vi.stubGlobal('fetch', fetchSpy)
 })
 
 afterEach(() => {
@@ -47,11 +46,14 @@ describe('exportPng', () => {
       backgroundColor: '#ffffff',
       cacheBust: true,
     })
-    expect(fetch).toHaveBeenCalledWith(DATA_URL)
+    // Konversi dilakukan lokal (dekode base64) — tidak ada panggilan jaringan,
+    // agar tidak melanggar CSP connect-src 'self' di produksi.
+    expect(fetchSpy).not.toHaveBeenCalled()
 
     expect(downloadBlob).toHaveBeenCalledTimes(1)
     const [blob, downloadedName] = vi.mocked(downloadBlob).mock.calls[0]
     expect(blob.type).toBe('image/png')
+    expect(blob.size).toBe(3)
     expect(downloadedName).toBe(filename)
     expect(filename).toMatch(/^jaga-data_uji-fiktif-1_\d{4}-\d{2}-\d{2}_\d{2}-\d{2}\.png$/)
 
@@ -66,11 +68,14 @@ describe('exportPng', () => {
     expect(downloadBlob).not.toHaveBeenCalled()
   })
 
-  it('meneruskan galat bila konversi data URL ke Blob gagal', async () => {
+  it('menolak data URL tak valid tanpa mengunduh berkas apa pun', async () => {
     const node = document.createElement('div')
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('jaringan putus')))
+    vi.mocked(toPng).mockResolvedValueOnce('bukan-data-url')
 
-    await expect(exportPng(node, 'gagal-fetch')).rejects.toThrow('jaringan putus')
+    await expect(exportPng(node, 'data-url-salah')).rejects.toThrow(
+      'Format data URL tidak dikenali',
+    )
     expect(downloadBlob).not.toHaveBeenCalled()
+    expect(fetchSpy).not.toHaveBeenCalled()
   })
 })
