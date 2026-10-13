@@ -2,7 +2,7 @@
 
 **Proyek:** Pengembangan Media Web Interaktif untuk Pembelajaran Perlindungan Data Pribadi saat
 Menggunakan AI pada Siswa SMP (`pdp-ai-literacy`)
-**Tanggal pengujian:** 29 September 2026 · **Pembaruan terakhir:** 8 Oktober 2026
+**Tanggal pengujian:** 29 September 2026 · **Pembaruan terakhir:** 13 Oktober 2026
 **Status:** Tahap 7 selesai — semua kasus uji prioritas tinggi lulus
 
 ---
@@ -11,14 +11,14 @@ Menggunakan AI pada Siswa SMP (`pdp-ai-literacy`)
 
 | Aspek                          | Hasil                                                                                  |
 | ------------------------------ | -------------------------------------------------------------------------------------- |
-| Test otomatis                  | **52 berkas, 431 test — semuanya lulus**                                               |
-| Cakupan kode (V8)              | **99,64% statements · 95,94% branches · 98,48% functions** (target ≥ 80%)              |
+| Test otomatis                  | **52 berkas, 437 test — semuanya lulus**                                               |
+| Cakupan kode (V8)              | **99,64% statements · 96,00% branches · 98,49% functions** (target ≥ 80%)              |
 | Lighthouse (Chrome 154)        | Performance **0,99** · Accessibility **1,00** · Best Practices **1,00** · SEO **1,00** |
 | Lighthouse (Edge 154)          | Performance **0,99** · Accessibility **1,00** · Best Practices **1,00** · SEO **1,00** |
 | Payload awal (gzip)            | **104,2 KB** (target < 200 KB)                                                         |
 | Request pihak ketiga           | **0**                                                                                  |
 | Error console saat smoke test  | **0**                                                                                  |
-| Bug ditemukan selama pengujian | **14** — 14 diperbaiki, 0 tersisa                                                      |
+| Bug ditemukan selama pengujian | **15** — 15 diperbaiki, 0 tersisa                                                      |
 
 ---
 
@@ -170,7 +170,7 @@ Hasil `pnpm test:coverage` (provider V8, seluruh `src/**` kecuali `main.tsx` dan
 
 | Kelompok                                          | Statements | Branch     | Functions  |
 | ------------------------------------------------- | ---------- | ---------- | ---------- |
-| **Seluruh berkas**                                | **99,64%** | **95,94%** | **98,48%** |
+| **Seluruh berkas**                                | **99,64%** | **96,00%** | **98,49%** |
 | `src/domain`                                      | 98,37%     | 93,52%     | 100%       |
 | `src/infra`                                       | 100%       | 96,49%     | 100%       |
 | `src/components`                                  | 99,11%     | 97,50%     | 100%       |
@@ -252,6 +252,8 @@ dipanggil dengan argumen eksplisit.
 | 12  | Cakupan test < 80% (belum ada test komponen/halaman)                                                                                                                       | `pnpm test:coverage` | Mayor         | Diperbaiki → 99,64%                                                                                                      |
 | 13  | Threshold coverage gagal karena `exportPdf`, `storage.schema`, `repoPersistStorage` belum dites                                                                            | `pnpm test:coverage` | Mayor         | Diperbaiki                                                                                                               |
 | 14  | Daftar Samarkan: pratinjau kalimat kedap-kedip & opsi sulit diklik; isi popover meluber keluar layar tanpa bisa digulir (tinggi 772 px di viewport 670 px, posisi `fixed`) | Uji coba di peramban | Kritis (UX)   | Diperbaiki → popover dibatasi `--radix-popper-available-height` + gulir internal, kotak pratinjau tinggi tetap (ADR-014) |
+
+| 15 | Ekspor PNG gagal di produksi (Vercel): `fetch(dataUrl)` melanggar CSP `connect-src 'self'` — Console: _"Connecting to 'data:image/png;base64,…' violates the following Content Security Policy directive"_ | Uji coba di produksi | Kritis (fungsional) | Diperbaiki → konversi lokal `dataUrlToBlob` (`atob` + `Uint8Array` → `Blob`); CSP tidak diubah |
 
 **Bug tersisa: 0.**
 

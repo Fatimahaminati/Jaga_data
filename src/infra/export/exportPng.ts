@@ -1,4 +1,4 @@
-import { downloadBlob, fileStamp, safeFilename } from './download'
+import { dataUrlToBlob, downloadBlob, fileStamp, safeFilename } from './download'
 
 /**
  * Ekspor kartu hasil ke PNG.
@@ -13,7 +13,8 @@ export async function exportPng(node: HTMLElement, filenameLabel: string): Promi
   })
 
   const filename = `jaga-data_${safeFilename(filenameLabel)}_${fileStamp()}.png`
-  const blob = await (await fetch(dataUrl)).blob()
+  // Dilarang `fetch(dataUrl)`: CSP connect-src 'self' memblokir data: di produksi.
+  const blob = dataUrlToBlob(dataUrl)
   downloadBlob(blob, filename)
   return filename
 }
